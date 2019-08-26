@@ -2,19 +2,21 @@ package com.itsight.countries.view
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.View
 import com.itsight.countries.R
-import com.itsight.countries.model.CountriesService
 import com.itsight.countries.viewmodel.ListViewModel
+import com.itsight.countries.viewmodel.MovieListViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var viewModel: ListViewModel
     private val countriesAdapter = CountryListAdapter(arrayListOf())
+    lateinit var movieViewModel: MovieListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +29,21 @@ class MainActivity : AppCompatActivity() {
             adapter = countriesAdapter
         }
 
+        swipeRefreshLayout.setOnRefreshListener {
+            swipeRefreshLayout.isRefreshing = false
+            viewModel.refresh()
+        }
+
         observerViewModel()
+
+        movieViewModel = ViewModelProviders.of(this).get(MovieListViewModel::class.java)
+        movieViewModel.refresh()
+
+        movieViewModel.movies.observe(this, Observer { movie ->
+            movie?.let{
+                txtMovieName.text = it.movieTitle
+            }
+        })
 
     }
 

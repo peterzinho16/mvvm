@@ -10,3 +10,13 @@ data class Country(
     @SerializedName("flagPNG")
     val flag: String?
 )
+
+data class Movie(
+
+    @SerializedName("Title")
+    val movieTitle: String,
+    @SerializedName("Year")
+    val movieYear: String,
+    @SerializedName("Plot")
+    val moviePlot: String
+)

@@ -2,21 +2,30 @@ package com.itsight.countries.viewmodel
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import com.itsight.countries.model.CountriesBaseService
 import com.itsight.countries.model.CountriesService
 import com.itsight.countries.model.Country
+import com.itsight.countries.model.DaggerCountriesComponent
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
 class ListViewModel: ViewModel(){
 
-    private val countriesService = CountriesService()
+    @Inject
+    lateinit var countriesService: CountriesBaseService
     private val disposable = CompositeDisposable()
 
     val countries = MutableLiveData<List<Country>>()
     val countryLoadError = MutableLiveData<Boolean>()
     val loading = MutableLiveData<Boolean>()
+
+    init{
+        DaggerCountriesComponent.create().inject(this)
+    }
 
     fun refresh(){
         fetchCountries()
@@ -37,7 +46,6 @@ class ListViewModel: ViewModel(){
                     override fun onError(e: Throwable?) {
                         countryLoadError.value = true
                         loading.value = false
-
                     }
                 })
         )
